@@ -20,7 +20,7 @@ input.addEventListener("input", onInputDebounce);
 function onInput() {
     
     inform.innerHTML='';
-    const NAME =input.value;
+    const NAME =input.value.trim();
     // console.log(NAME)
     fetchCountries(NAME).then(data => {
         console.log(data)        
