@@ -3,6 +3,7 @@ import Notiflix from 'notiflix';
 
 
 const DEBOUNCE_DELAY = 300;
+var debounce = require('lodash.debounce');
 
 const BASE_URL = "https://restcountries.com/v2/name";
 const FILTER = "fields=name,capital,population,flags,languages"
@@ -10,8 +11,9 @@ const FILTER = "fields=name,capital,population,flags,languages"
 const input = document.querySelector("#search-box");
 const list = document.querySelector(".country-list");
 const inform = document.querySelector('.country-info');
+let onInputDebounce = debounce(onInput, DEBOUNCE_DELAY);
 
-input.addEventListener("input", onInput);
+input.addEventListener("input", onInputDebounce);
 
 
 
@@ -23,33 +25,56 @@ function onInput() {
     fetchCountries(NAME).then(data => {
         console.log(data)
         let i =0;
-        for (let index = 0; index < data.length; index++) {
+        try {
+            for (let index = 0; index < data.length; index++) {
             
-            let letter0 = data[index].name[0].toLowerCase();
-            
-            
-            if (letter0 ===NAME[0].toLowerCase()) {
-                                               
-                createMarkup2(data[index])
-                i++
+                let letter0 = data[index].name[0].toLowerCase();
                 
-                let letter0 = data[index].name[1].toLowerCase();
-
-                if (letter0 ===NAME[1]) {
-                    // inform.innerHTML='';
-                    createMarkup2(data[index])
-                    let letter0 = data[index].name[2].toLowerCase();
-                    if (letter0 ===NAME[2]) {
+                
+                if (letter0 ===NAME[0].toLowerCase()) {
+                    if (data.length === 1) {
                         inform.innerHTML='';
-                        createMarkup1(data[index])
-                        
+                        createMarkupAll(data[index])
+                        i++
+                    } else {
+                        // createMarkupPart(data[index])
+                        i++
+                    }                  
+                                                            
+                    let letter0 = data[index].name[1].toLowerCase();
+    
+                    if (letter0 ===NAME[1]) {
+                        // inform.innerHTML='';
+                        if (data.length === 1) {
+                            inform.innerHTML='';
+                            createMarkupAll(data[index])
+                        } else {
+                            createMarkupPart(data[index])
+                        }
+
+                        // createMarkup2(data[index])
+                        let letter0 = data[index].name[2].toLowerCase();
+                        if (letter0 ===NAME[2]) {
+                            
+                            if (data.length === 1) {
+                                inform.innerHTML='';
+                                createMarkupAll(data[index])
+                            } else {
+                                createMarkupPart(data[index])
+                            }
+                            
+                            
+                        }
                     }
+                    
                 }
                 
+                
             }
-            
-            
+        } catch (error) {
+            console.log(error.name)
         }
+        
         if (i > 10) {
             Notiflix.Notify.success('Too many matches found. Please enter a more specific name.')
         };
@@ -63,6 +88,7 @@ function onInput() {
 }
 
 function fetchCountries(NAME) {
+    
     const resp = fetch(`${BASE_URL}/${NAME}?${FILTER}`).then(resp => {
         console.log(resp);
         if (!resp.ok) {
@@ -82,7 +108,7 @@ function fetchCountries(NAME) {
 
 
 // function createMarkup (arr) {
-//     const markup = arr.map(({name, flags, capital, population, languages }) => `
+//     const markup = arr.map(item => `
       
 //       <h2><img src="${flags.svg}" alt="Country name" width = 50px>${name}</h2>
 //       <ul>
@@ -93,7 +119,7 @@ function fetchCountries(NAME) {
 //     inform.insertAdjacentHTML('beforeend', markup)
 // }
 
-function createMarkup1 (arr) {
+function createMarkupAll (arr) {
     const markup = `
       
       <h2><img src="${arr.flags.svg}" alt="Country name" width = 50px>${arr.name}</h2>
@@ -106,7 +132,7 @@ function createMarkup1 (arr) {
     inform.insertAdjacentHTML('beforeend', markup)
 }
 
-function createMarkup2 (arr) {
+function createMarkupPart (arr) {
     const markup1 = `<h2><img src="${arr.flags.svg}" alt="Country name" width = 50px>${arr.name}</h2>`
     inform.insertAdjacentHTML('beforeend', markup1)
 }
