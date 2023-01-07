@@ -21,70 +21,27 @@ function onInput() {
     
     inform.innerHTML='';
     const NAME =input.value;
-    console.log(NAME)
+    // console.log(NAME)
     fetchCountries(NAME).then(data => {
-        console.log(data)
-        let i =0;
+        console.log(data)        
         try {
-            for (let index = 0; index < data.length; index++) {
-            
-                let letter0 = data[index].name[0].toLowerCase();
-                
-                
-                if (letter0 ===NAME[0].toLowerCase()) {
-                    if (data.length === 1) {
-                        inform.innerHTML='';
-                        createMarkupAll(data[index])
-                        i++
-                    } else {
-                        // createMarkupPart(data[index])
-                        i++
-                    }                  
-                                                            
-                    let letter0 = data[index].name[1].toLowerCase();
-    
-                    if (letter0 ===NAME[1]) {
-                        // inform.innerHTML='';
-                        if (data.length === 1) {
-                            inform.innerHTML='';
-                            createMarkupAll(data[index])
-                        } else {
-                            createMarkupPart(data[index])
-                        }
-
-                        // createMarkup2(data[index])
-                        let letter0 = data[index].name[2].toLowerCase();
-                        if (letter0 ===NAME[2]) {
-                            
-                            if (data.length === 1) {
-                                inform.innerHTML='';
-                                createMarkupAll(data[index])
-                            } else {
-                                createMarkupPart(data[index])
-                            }
-                            
-                            
-                        }
-                    }
-                    
-                }
-                
-                
-            }
+            if (data.length > 10) {
+                Notiflix.Notify.success('Too many matches found. Please enter a more specific name.')
+            } else if (data.length > 1) {
+                createMarkupPeace(data) 
+            } else if (data.length === 1){
+                createMarkup(data)
+            }            
+          
         } catch (error) {
             console.log(error.name)
         }
-        
-        if (i > 10) {
-            Notiflix.Notify.success('Too many matches found. Please enter a more specific name.')
-        };
-        
+                       
     });
 
     if (!input) {
         inform.innerHTML='';  
-    }
-    let i =0;
+    }    
 }
 
 function fetchCountries(NAME) {
@@ -99,40 +56,22 @@ function fetchCountries(NAME) {
     })
     .catch(err => Notiflix.Notify.failure('Oops, there is no country with that name'))
     return resp;
-}
+};
 
-// function sss(){
-//    resp.then(resp => console.log(resp))
-// }
-
-
-
-// function createMarkup (arr) {
-//     const markup = arr.map(item => `
+function createMarkup (arr) {
+    const markup = arr.map(item => `
       
-//       <h2><img src="${flags.svg}" alt="Country name" width = 50px>${name}</h2>
-//       <ul>
-//       <li>Capital:${capital}</li>
-//       <li>Population:${population}</li>
-//       <li>Languages:${languages[0].name}</li>
-//       </ul>`).join('');
-//     inform.insertAdjacentHTML('beforeend', markup)
-// }
-
-function createMarkupAll (arr) {
-    const markup = `
-      
-      <h2><img src="${arr.flags.svg}" alt="Country name" width = 50px>${arr.name}</h2>
+      <h2 class="title"><img class = "flag" src="${item.flags.svg}" alt="Country name" width = 50px>${item.name}</h2>
       <ul>
-      <li>Capital:${arr.capital}</li>
-      <li>Population:${arr.population}</li>
-      <li>Languages:${arr.languages[0].name}</li>
-      </ul>`;
-
+      <li class = "item">Capital:<span class = "item_title">${item.capital}</span></li>
+      <li class = "item">Population:<span class = "item_title">${item.population}</span></li>
+      <li class = "item">Languages:<span class = "item_title">${item.languages.map(language => language.name)}</span></li>
+      </ul>`).join('');
     inform.insertAdjacentHTML('beforeend', markup)
-}
+};
 
-function createMarkupPart (arr) {
-    const markup1 = `<h2><img src="${arr.flags.svg}" alt="Country name" width = 50px>${arr.name}</h2>`
-    inform.insertAdjacentHTML('beforeend', markup1)
-}
+
+function createMarkupPeace (arr) {
+    const markup = arr.map(item => `<h2><img src="${item.flags.svg}" alt="Country name" width = 50px>${item.name}</h2>`).join('');
+    inform.insertAdjacentHTML('beforeend', markup)
+};
