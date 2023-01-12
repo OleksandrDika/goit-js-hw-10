@@ -21,6 +21,10 @@ function onInput() {
     
     inform.innerHTML='';
     const NAME =input.value.trim();
+    if (!NAME) {
+        inform.innerHTML='';
+        return
+    }
     // console.log(NAME)
     fetchCountries(NAME).then(data => {
         console.log(data)        
